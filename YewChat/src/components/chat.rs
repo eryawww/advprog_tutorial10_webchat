@@ -6,6 +6,8 @@ use yew_agent::{Bridge, Bridged};
 use crate::services::event_bus::EventBus;
 use crate::{services::websocket::WebsocketService, User};
 
+use super::coding::*;
+
 pub enum Msg {
     HandleMsg(String),
     SubmitMessage,
@@ -91,12 +93,8 @@ impl Component for Chat {
                         self.users = users_from_message
                             .iter()
                             .map(|u| UserProfile {
-                                name: u.into(),
-                                avatar: format!(
-                                    "https://avatars.dicebear.com/api/adventurer-neutral/{}.svg",
-                                    u
-                                )
-                                .into(),
+                                name: u.to_string(),
+                                avatar: u.to_string(),
                             })
                             .collect();
                         return true;
@@ -147,11 +145,11 @@ impl Component for Chat {
                             html!{
                                 <div class="flex m-3 bg-white rounded-lg p-2">
                                     <div>
-                                        <img class="w-12 h-12 rounded-full" src={u.avatar.clone()} alt="avatar"/>
+                                        <img class="w-12 h-12 rounded-full" src={get_image(&u.name)} alt="avatar"/>
                                     </div>
                                     <div class="flex-grow p-3">
                                         <div class="flex text-xs justify-between">
-                                            <div>{u.name.clone()}</div>
+                                            <div>{get_username(&u.name)}</div>
                                         </div>
                                         <div class="text-xs text-gray-400">
                                             {"Hi there!"}
@@ -170,10 +168,10 @@ impl Component for Chat {
                                 let user = self.users.iter().find(|u| u.name == m.from).unwrap();
                                 html!{
                                     <div class="flex items-end w-3/6 bg-gray-100 m-8 rounded-tl-lg rounded-tr-lg rounded-br-lg ">
-                                        <img class="w-8 h-8 rounded-full m-3" src={user.avatar.clone()} alt="avatar"/>
+                                        <img class="w-8 h-8 rounded-full m-3" src={get_image(&user.name)} alt="avatar"/>
                                         <div class="p-3">
                                             <div class="text-sm">
-                                                {m.from.clone()}
+                                                {get_username(&m.from)}
                                             </div>
                                             <div class="text-xs text-gray-500">
                                                 if m.message.ends_with(".gif") {
